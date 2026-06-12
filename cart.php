@@ -10,18 +10,44 @@ if (!isset($_SESSION['user'])) {
 $username = $_SESSION['user'];
 
 if (isset($_GET['remove'])) {
-    $id = $_GET['remove'];
-    mysqli_query($conn, "DELETE FROM cart WHERE id='$id'");
+    $id = (int)$_GET['remove'];
+    $cartItem = mysqli_query($conn, "SELECT item_name, quantity FROM cart WHERE id='$id'");
+    if (mysqli_num_rows($cartItem) > 0) {
+        $item = mysqli_fetch_assoc($cartItem);
+        $itemName = mysqli_real_escape_string($conn, $item['item_name']);
+        $quantityRemoved = (int)$item['quantity'];
+        mysqli_query($conn, "UPDATE breeds SET quantity = quantity + $quantityRemoved WHERE breed='$itemName'");
+        mysqli_query($conn, "DELETE FROM cart WHERE id='$id'");
+    }
 }
 
 if (isset($_GET['increase'])) {
-    $id = $_GET['increase'];
-    mysqli_query($conn, "UPDATE cart SET quantity = quantity + 1 WHERE id='$id'");
+    $id = (int)$_GET['increase'];
+    $cartItem = mysqli_query($conn, "SELECT item_name FROM cart WHERE id='$id'");
+    if (mysqli_num_rows($cartItem) > 0) {
+        $itemName = mysqli_real_escape_string($conn, mysqli_fetch_assoc($cartItem)['item_name']);
+        $stockQuery = mysqli_query($conn, "SELECT quantity FROM breeds WHERE breed='$itemName'");
+        if ($stockQuery && mysqli_num_rows($stockQuery) > 0) {
+            $stock = (int)mysqli_fetch_assoc($stockQuery)['quantity'];
+            if ($stock > 0) {
+                mysqli_query($conn, "UPDATE cart SET quantity = quantity + 1 WHERE id='$id'");
+                mysqli_query($conn, "UPDATE breeds SET quantity = quantity - 1 WHERE breed='$itemName'");
+            }
+        }
+    }
 }
 
 if (isset($_GET['decrease'])) {
-    $id = $_GET['decrease'];
-    mysqli_query($conn, "UPDATE cart SET quantity = quantity - 1 WHERE id='$id' AND quantity > 1");
+    $id = (int)$_GET['decrease'];
+    $cartItem = mysqli_query($conn, "SELECT item_name, quantity FROM cart WHERE id='$id'");
+    if (mysqli_num_rows($cartItem) > 0) {
+        $item = mysqli_fetch_assoc($cartItem);
+        if ((int)$item['quantity'] > 1) {
+            $itemName = mysqli_real_escape_string($conn, $item['item_name']);
+            mysqli_query($conn, "UPDATE cart SET quantity = quantity - 1 WHERE id='$id'");
+            mysqli_query($conn, "UPDATE breeds SET quantity = quantity + 1 WHERE breed='$itemName'");
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -46,18 +72,10 @@ if (isset($_GET['decrease'])) {
         $query = mysqli_query($conn, "SELECT * FROM cart WHERE username='$username'");
 
         $imageMap = [
-            "Feather Wand"=>"https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&fit=crop&w=800&q=80",
-            "Crinkle Tunnel"=>"https://images.unsplash.com/photo-1592194996308-7b43878e84a6?auto=format&fit=crop&w=800&q=80",
-            "Mouse Chase"=>"https://images.unsplash.com/photo-1516750105099-4b8a83e217ee?auto=format&fit=crop&w=800&q=80",
-            "Catnip Ball"=>"https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=800&q=80",
-            "Tuna Pâté"=>"https://images.unsplash.com/photo-1589924691995-400dc9a8a2d2?auto=format&fit=crop&w=800&q=80",
-            "Salmon Bites"=>"https://images.unsplash.com/photo-1601758125946-6ec2ef64daf8?auto=format&fit=crop&w=800&q=80",
-            "Kitten Kibble"=>"https://images.unsplash.com/photo-1583512603806-077998240c7a?auto=format&fit=crop&w=800&q=80",
-            "Lickable Puree"=>"https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=800&q=80",
-            "Cozy Cave Bed"=>"https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80",
-            "Scratch Post Deluxe"=>"https://images.unsplash.com/photo-1518791841217-8f162f1912da?auto=format&fit=crop&w=800&q=80",
-            "Breakaway Collar"=>"https://images.unsplash.com/photo-1606214174585-fe31582dc6ee?auto=format&fit=crop&w=800&q=80",
-            "Self-Grooming Brush"=>"https://images.unsplash.com/photo-1560807707-8cc77767d783?auto=format&fit=crop&w=800&q=80"
+            "Persian" => "https://images.unsplash.com/photo-1518791841217-8f162f1912da?auto=format&fit=crop&w=800&q=80",
+            "Siamese" => "https://images.unsplash.com/photo-1597932256378-16d7d4264e62?auto=format&fit=crop&w=800&q=80",
+            "Maine Coon" => "https://images.unsplash.com/photo-1525253086316-d0c936c814f8?auto=format&fit=crop&w=800&q=80",
+            "Bengal" => "https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=800&q=80"
         ];
 
         while ($row = mysqli_fetch_assoc($query)) {

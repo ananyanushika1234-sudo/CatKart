@@ -10,20 +10,49 @@ if (!isset($_SESSION['user'])) {
 
 if (isset($_POST['item'])) {
     $username = $_SESSION['user'];
-    $item = $_POST['item'];
-    $price = $_POST['price'];
+    $item = mysqli_real_escape_string($conn, $_POST['item']);
+    $price = (int)$_POST['price'];
 
-    $check = mysqli_query($conn,
-    "SELECT * FROM cart WHERE username='$username' AND item_name='$item'");
+    $breedQuery = mysqli_query($conn,
+        "SELECT quantity FROM breeds WHERE breed='$item'");
 
-    if (mysqli_num_rows($check) > 0) {
+    if (!$breedQuery || mysqli_num_rows($breedQuery) === 0) {
+        echo "out_of_stock";
+        exit();
+    }
+
+    $breedData = mysqli_fetch_assoc($breedQuery);
+    $available = (int)$breedData['quantity'];
+    if ($available <= 0) {
+        echo "out_of_stock";
+        exit();
+    }
+
+    $cartQuery = mysqli_query($conn,
+        "SELECT quantity FROM cart WHERE username='$username' AND item_name='$item'");
+
+    $currentQty = 0;
+    if (mysqli_num_rows($cartQuery) > 0) {
+        $currentQty = (int)mysqli_fetch_assoc($cartQuery)['quantity'];
+    }
+
+    if ($currentQty + 1 > $available) {
+        echo "out_of_stock";
+        exit();
+    }
+
+    if ($currentQty > 0) {
         mysqli_query($conn,
-        "UPDATE cart SET quantity = quantity + 1 WHERE username='$username' AND item_name='$item'");
+            "UPDATE cart SET quantity = quantity + 1 WHERE username='$username' AND item_name='$item'");
     } else {
         mysqli_query($conn,
-        "INSERT INTO cart(username, item_name, price, quantity)
-        VALUES ('$username', '$item', '$price', 1)");
+            "INSERT INTO cart(username, item_name, price, quantity)
+            VALUES ('$username', '$item', '$price', 1)");
     }
+
+    mysqli_query($conn,
+        "UPDATE breeds SET quantity = quantity - 1 WHERE breed='$item'");
+
     echo "success";
 }
 ?>

@@ -1,0 +1,13 @@
+{
+  "files.exclude": {
+    "**/.git": false,
+    "**/.php-sessions": false,
+    "**/.vscode": false
+  },
+  "search.exclude": {
+    "**/.git": false,
+    "**/.php-sessions": false,
+    "**/.vscode": false
+  },
+  "explorer.excludeGitIgnore": false
+}

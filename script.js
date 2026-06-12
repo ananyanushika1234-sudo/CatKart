@@ -138,22 +138,48 @@ function addToCart(item, price) {
     fetch("add_to_cart.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "item=" + item + "&price=" + price
+        body: "item=" + encodeURIComponent(item) + "&price=" + price
     })
     .then(response => response.text())
     .then(data => {
-        alert(item + " added to cart!");
-        updateQuantity(item);
+        data = data.trim();
+        if (data === "success") {
+            alert(item + " added to cart!");
+            updateQuantity(item);
+        } else if (data === "out_of_stock") {
+            alert("Sorry, " + item + " is out of stock.");
+        } else if (data === "login_required") {
+            alert("Please login first.");
+            window.location.href = "login.php";
+        } else {
+            alert("Could not add to cart: " + data);
+        }
     });
 }
 
 // 6. Update quantity on dashboard
 function updateQuantity(item) {
-    fetch("get_quantity.php?item=" + item)
+    fetch("get_quantity.php?item=" + encodeURIComponent(item))
     .then(response => response.text())
     .then(quantity => {
         let id = item.replace(/\s/g, '');
-        document.getElementById(id + "Qty").innerHTML = quantity;
+        let qtyElement = document.getElementById(id + "Qty");
+        let button = document.getElementById(id + "Btn");
+        let qty = parseInt(quantity, 10);
+
+        if (qtyElement) {
+            qtyElement.innerHTML = isNaN(qty) ? 0 : qty;
+        }
+
+        if (button) {
+            if (qty <= 0) {
+                button.disabled = true;
+                button.innerText = "Out of stock";
+            } else {
+                button.disabled = false;
+                button.innerText = "Add To Cart";
+            }
+        }
     });
 }
 
