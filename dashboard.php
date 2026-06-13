@@ -29,7 +29,7 @@ while ($row = mysqli_fetch_assoc($results)) {
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
-<body>
+<body class="has-sidebar">
     <header>
         <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
         <h1>🐱 CatKart</h1>
@@ -64,7 +64,7 @@ while ($row = mysqli_fetch_assoc($results)) {
             </ul>
             <h3>My Account</h3>
             <ul>
-                <li><a href="#">Profile</a></li>
+                <li><a href="profile.php">Profile</a></li>
                 <li><a href="#">Orders</a></li>
                 <li><a href="cart.php">My Cart</a></li>
             </ul>

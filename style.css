@@ -451,12 +451,12 @@ footer {
     transform: translateX(-250px);
 }
 
-body {
+body.has-sidebar {
     padding-left: 250px;
     transition: padding-left 0.3s ease;
 }
 
-body.sidebar-collapsed {
+body.has-sidebar.sidebar-collapsed {
     padding-left: 0;
 }
 
@@ -521,10 +521,10 @@ body.sidebar-collapsed {
 }
 
 @media (max-width: 900px) {
-    body {
+    body.has-sidebar {
         padding-left: 0;
     }
-    body.sidebar-collapsed {
+    body.has-sidebar.sidebar-collapsed {
         padding-left: 0;
     }
     .sidebar {
