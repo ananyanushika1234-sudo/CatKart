@@ -228,6 +228,19 @@ function showPaymentFields() {
     }
 }
 
+// 12. Sidebar toggle (hamburger)
+document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('sidebarToggle');
+    if (!btn) return;
+    // set initial icon (cross when sidebar is open, hamburger when closed)
+    btn.innerText = document.body.classList.contains('sidebar-closed') ? '☰' : '✕';
+    btn.addEventListener('click', function() {
+        document.body.classList.toggle('sidebar-closed');
+        // after toggling: show hamburger when closed, cross when open
+        btn.innerText = document.body.classList.contains('sidebar-closed') ? '☰' : '✕';
+    });
+});
+
 // 10. onblur
 function blurField(x) {
     x.style.border = "";
