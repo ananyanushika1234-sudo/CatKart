@@ -36,11 +36,6 @@ if (isset($_POST['item'])) {
         $currentQty = (int)mysqli_fetch_assoc($cartQuery)['quantity'];
     }
 
-    if ($currentQty + 1 > $available) {
-        echo "out_of_stock";
-        exit();
-    }
-
     if ($currentQty > 0) {
         mysqli_query($conn,
             "UPDATE cart SET quantity = quantity + 1 WHERE username='$username' AND item_name='$item'");

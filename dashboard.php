@@ -65,7 +65,7 @@ while ($row = mysqli_fetch_assoc($results)) {
             <h3>My Account</h3>
             <ul>
                 <li><a href="profile.php">Profile</a></li>
-                <li><a href="#">Orders</a></li>
+                <li><a href="order_history.php">Order History</a></li>
                 <li><a href="cart.php">My Cart</a></li>
             </ul>
         </aside>
