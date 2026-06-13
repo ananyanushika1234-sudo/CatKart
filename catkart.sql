@@ -41,7 +41,10 @@ CREATE TABLE IF NOT EXISTS orders (
 );
 
 INSERT INTO breeds (breed, price, quantity, image, description) VALUES
-('Persian', 22000, 3, 'https://images.unsplash.com/photo-1518791841217-8f162f1912da?auto=format&fit=crop&w=800&q=80', 'Fluffy, calm, and affectionate breed with a luxury personality.'),
-('Siamese', 18000, 5, 'https://images.unsplash.com/photo-1597932256378-16d7d4264e62?auto=format&fit=crop&w=800&q=80', 'Talkative and intelligent with striking blue eyes.'),
-('Maine Coon', 25000, 2, 'https://images.unsplash.com/photo-1525253086316-d0c936c814f8?auto=format&fit=crop&w=800&q=80', 'Large, friendly and ruggedly handsome, built for family life.'),
-('Bengal', 28000, 4, 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=800&q=80', 'Exotic spotted coat with an adventurous, playful spirit.');
+('Bengal', 28000, 4, 'images/bengal.jpg', 'Exotic spotted coat with an adventurous, playful spirit.'),
+('British Shorthair', 20000, 6, 'images/british-shorthair.jpg', 'Quiet and easygoing British Shorthair with plush blue-gray coat.'),
+('Maine Coon', 25000, 2, 'images/maine-coon.jpg', 'Large, friendly and ruggedly handsome, built for family life.'),
+('Persian', 22000, 3, 'images/persian.jpg', 'Fluffy, calm, and affectionate breed with a luxury personality.'),
+('Ragdoll', 24000, 5, 'images/ragdoll.jpg', 'Gentle and loving Ragdoll with striking blue eyes.'),
+('Scottish Fold', 21000, 4, 'images/scottish-fold.jpg', 'Sweet-faced Scottish Fold with folded ears and plush coat.'),
+('Sphynx', 30000, 2, 'images/sphynx.jpg', 'Hairless Sphynx with a playful and affectionate temperament.');

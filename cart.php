@@ -72,10 +72,13 @@ if (isset($_GET['decrease'])) {
         $query = mysqli_query($conn, "SELECT * FROM cart WHERE username='$username'");
 
         $imageMap = [
-            "Persian" => "https://images.unsplash.com/photo-1518791841217-8f162f1912da?auto=format&fit=crop&w=800&q=80",
-            "Siamese" => "https://images.unsplash.com/photo-1597932256378-16d7d4264e62?auto=format&fit=crop&w=800&q=80",
-            "Maine Coon" => "https://images.unsplash.com/photo-1525253086316-d0c936c814f8?auto=format&fit=crop&w=800&q=80",
-            "Bengal" => "https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=800&q=80"
+            "Bengal" => "images/bengal.jpg",
+            "British Shorthair" => "images/british-shorthair.jpg",
+            "Maine Coon" => "images/maine-coon.jpg",
+            "Persian" => "images/persian.jpg",
+            "Ragdoll" => "images/ragdoll.jpg",
+            "Scottish Fold" => "images/scottish-fold.jpg",
+            "Sphynx" => "images/sphynx.jpg"
         ];
 
         while ($row = mysqli_fetch_assoc($query)) {

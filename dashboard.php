@@ -21,6 +21,16 @@ while ($row = mysqli_fetch_assoc($breedResults)) {
     <script src="script.js"></script>
 </head>
 <body>
+    <aside class="sidebar">
+        <nav>
+            <ul>
+                <li><a href="#accessories">Accessories</a></li>
+                <li><a href="#catfood">Cat Food</a></li>
+                <li><a href="logout.php">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <main class="main-content">
     <header>
         <h1>🐱 CatKart</h1>
         <p>Welcome <?php echo htmlspecialchars($_SESSION['user']); ?>. Shop available cat breeds from the petstore.</p>
@@ -33,6 +43,7 @@ while ($row = mysqli_fetch_assoc($breedResults)) {
                onblur="blurField(this)"
                class="search-box">
 
+        <button id="sidebarToggle" class="hamburger" aria-label="Toggle menu">☰</button>
         <div class="top-buttons">
             <a href="cart.php">
                 <button class="top-btn">🛒 View Cart</button>
@@ -69,5 +80,6 @@ while ($row = mysqli_fetch_assoc($breedResults)) {
     <footer id="contact">
         <p>&copy; 2026 CatKart 🐾 | Contact: support@catkart.example</p>
     </footer>
+    </main>
 </body>
 </html>

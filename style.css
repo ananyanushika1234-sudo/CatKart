@@ -217,7 +217,7 @@ button {
 header {
     background:
         linear-gradient(110deg, rgba(80,30,0,0.88), rgba(196,90,20,0.82)),
-        url('https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1600&q=80');
+        url('images/background.png');
     background-size: cover;
     background-position: center;
     padding: 34px 20px;
@@ -437,4 +437,73 @@ footer {
     .item {
         width: 100%;
     }
+}
+
+/* Simple sidebar */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 180px;
+    background: #fff8f0;
+    border-right: 1px solid #f5dece;
+    padding: 24px 12px;
+    transition: left 220ms ease;
+    z-index: 1000;
+}
+.sidebar nav ul {
+    list-style: none;
+    padding-left: 0;
+}
+.sidebar nav li {
+    margin: 12px 0;
+}
+.sidebar nav a {
+    color: #7a3510;
+    text-decoration: none;
+    font-weight: 600;
+}
+.main-content {
+    margin-left: 200px; /* room for sidebar */
+}
+
+@media (max-width: 800px) {
+    .sidebar { display: none; }
+    .main-content { margin-left: 0; }
+}
+
+/* Hamburger toggle */
+.hamburger {
+    position: fixed;
+    top: 18px;
+    /* place to the right of the sidebar (180px width + 20px gap)
+       when the sidebar is visible; move to left edge when closed */
+    left: 220px;
+    z-index: 9999;
+    background: #ffffffee;
+    border: 1px solid #f5dece;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: left 220ms ease;
+}
+
+/* When sidebar is closed, move hamburger to the left edge */
+body.sidebar-closed .hamburger {
+    left: 12px;
+}
+
+/* On small screens the sidebar is hidden; keep hamburger at left */
+@media (max-width: 800px) {
+    .hamburger { left: 12px; }
+}
+
+/* When closed, hide sidebar and expand main */
+body.sidebar-closed .sidebar {
+    left: -220px;
+}
+body.sidebar-closed .main-content {
+    margin-left: 0;
 }
