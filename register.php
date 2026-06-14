@@ -2,30 +2,37 @@
 include("db.php"); session_start();
 
 if (isset($_POST['register'])) {
-    $name     = $_POST['name'];
-    $email    = $_POST['email'];
-    $phone    = $_POST['phone'];
-    $address  = $_POST['address'];
-    $pincode  = $_POST['pincode'];
-    $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $confirm  = $_POST['confirm'];
+    $name     = mysqli_real_escape_string($conn, trim($_POST['name']));
+    $email    = mysqli_real_escape_string($conn, trim($_POST['email']));
+    $phone    = mysqli_real_escape_string($conn, trim($_POST['phone']));
+    $address  = mysqli_real_escape_string($conn, trim($_POST['address']));
+    $pincode  = mysqli_real_escape_string($conn, trim($_POST['pincode']));
+    $username = mysqli_real_escape_string($conn, trim($_POST['username']));
+    $password_raw = trim($_POST['password']);
+    $confirm_raw  = trim($_POST['confirm']);
 
-    if ($_POST['password'] != $confirm) {
+    if ($password_raw != $confirm_raw) {
         $error = "Passwords do not match";
     } else {
+        $password = password_hash($password_raw, PASSWORD_DEFAULT);
+        $password_escaped = mysqli_real_escape_string($conn, $password);
+        
         $query = "INSERT INTO users 
                   (name, email, phone, address, pincode, username, password) 
-                  VALUES ('$name', '$email', '$phone', '$address', '$pincode', '$username', '$password')";
+                  VALUES ('$name', '$email', '$phone', '$address', '$pincode', '$username', '$password_escaped')";
         $result = mysqli_query($conn, $query);
-if (!$result) {
-    $error = "Registration failed: " . mysqli_error($conn);
-} else {
-    echo "<script>
-            alert('Registration Successful');
-            window.location='login.php';
-          </script>";
-}
+        if (!$result) {
+            if (mysqli_errno($conn) == 1062) {
+                $error = "Username already exists. Please choose a different one.";
+            } else {
+                $error = "Registration failed: " . mysqli_error($conn);
+            }
+        } else {
+            echo "<script>
+                    alert('Registration Successful');
+                    window.location='login.php';
+                  </script>";
+        }
     }
 }
 ?>
