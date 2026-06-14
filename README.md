@@ -93,3 +93,18 @@ CatKart/
 - All product images are stored in `images/` and committed to the repository
 - If you change MySQL root password, update `db.php` accordingly
 - The sidebar is a fixed toggleable panel — click ☰ in the header to toggle
+
+## Authentication verification
+
+The registration script (`register.php`) hashes passwords with `password_hash()` and stores the hash in the `users.password` column.
+The login script (`login.php`) retrieves the user by **username** and validates the password with `password_verify()`.
+
+A test user (`hello` / `hello123`) was created and successfully logged in, confirming that:
+- The password is saved as a bcrypt hash (e.g., `$2y$10$…`).
+- The login query correctly selects `username`.
+- Session handling works as expected.
+
+If you encounter “Invalid username or password”, ensure that:
+1. The user was actually inserted (check `SELECT id, username, password FROM users ORDER BY id DESC` in phpMyAdmin).
+2. The `password` column contains a non‑empty hash.
+3. `db.php` points to the correct MySQL database.
