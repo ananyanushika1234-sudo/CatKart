@@ -13,9 +13,10 @@ $accessories = [];
 $food = [];
 
 while ($row = mysqli_fetch_assoc($results)) {
-    if ($row['category'] == 'accessory') {
+    $cat = $row['category'] ?? 'breed';
+    if ($cat === 'accessory') {
         $accessories[] = $row;
-    } elseif ($row['category'] == 'food') {
+    } elseif ($cat === 'food') {
         $food[] = $row;
     } else {
         $breeds[] = $row;
