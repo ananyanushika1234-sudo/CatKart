@@ -1,5 +1,5 @@
 <?php
-include("db.php");
+include("db.php"); session_start();
 
 if (isset($_POST['register'])) {
     $name     = $_POST['name'];
@@ -17,11 +17,15 @@ if (isset($_POST['register'])) {
         $query = "INSERT INTO users 
                   (name, email, phone, address, pincode, username, password) 
                   VALUES ('$name', '$email', '$phone', '$address', '$pincode', '$username', '$password')";
-        mysqli_query($conn, $query);
-        echo "<script>
-                alert('Registration Successful');
-                window.location='login.php';
-              </script>";
+        $result = mysqli_query($conn, $query);
+if (!$result) {
+    $error = "Registration failed: " . mysqli_error($conn);
+} else {
+    echo "<script>
+            alert('Registration Successful');
+            window.location='login.php';
+          </script>";
+}
     }
 }
 ?>
