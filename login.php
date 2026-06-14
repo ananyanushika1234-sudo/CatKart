@@ -2,7 +2,7 @@
 session_start();
 include("db.php");
 if (isset($_POST['login'])) {
-    $username = trim($_POST['username']);
+    $username = mysqli_real_escape_string($conn, trim($_POST['username']));
     $password = trim($_POST['password']);
 
     $query = "SELECT * FROM users WHERE username='$username'";
@@ -25,11 +25,13 @@ if (isset($_POST['login'])) {
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>CatKart Login</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
+
 <body>
     <div class="login-container">
         <h1>🐱 CatKart</h1>
@@ -53,4 +55,5 @@ if (isset($_POST['login'])) {
         </div>
     </div>
 </body>
+
 </html>
