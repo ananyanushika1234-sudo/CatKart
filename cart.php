@@ -8,47 +8,6 @@ if (!isset($_SESSION['user'])) {
 }
 
 $username = $_SESSION['user'];
-
-if (isset($_GET['remove'])) {
-    $id = (int)$_GET['remove'];
-    $cartItem = mysqli_query($conn, "SELECT item_name, quantity FROM cart WHERE id='$id'");
-    if (mysqli_num_rows($cartItem) > 0) {
-        $item = mysqli_fetch_assoc($cartItem);
-        $itemName = mysqli_real_escape_string($conn, $item['item_name']);
-        $quantityRemoved = (int)$item['quantity'];
-        mysqli_query($conn, "UPDATE breeds SET quantity = quantity + $quantityRemoved WHERE breed='$itemName'");
-        mysqli_query($conn, "DELETE FROM cart WHERE id='$id'");
-    }
-}
-
-if (isset($_GET['increase'])) {
-    $id = (int)$_GET['increase'];
-    $cartItem = mysqli_query($conn, "SELECT item_name FROM cart WHERE id='$id'");
-    if (mysqli_num_rows($cartItem) > 0) {
-        $itemName = mysqli_real_escape_string($conn, mysqli_fetch_assoc($cartItem)['item_name']);
-        $stockQuery = mysqli_query($conn, "SELECT quantity FROM breeds WHERE breed='$itemName'");
-        if ($stockQuery && mysqli_num_rows($stockQuery) > 0) {
-            $stock = (int)mysqli_fetch_assoc($stockQuery)['quantity'];
-            if ($stock > 0) {
-                mysqli_query($conn, "UPDATE cart SET quantity = quantity + 1 WHERE id='$id'");
-                mysqli_query($conn, "UPDATE breeds SET quantity = quantity - 1 WHERE breed='$itemName'");
-            }
-        }
-    }
-}
-
-if (isset($_GET['decrease'])) {
-    $id = (int)$_GET['decrease'];
-    $cartItem = mysqli_query($conn, "SELECT item_name, quantity FROM cart WHERE id='$id'");
-    if (mysqli_num_rows($cartItem) > 0) {
-        $item = mysqli_fetch_assoc($cartItem);
-        if ((int)$item['quantity'] > 1) {
-            $itemName = mysqli_real_escape_string($conn, $item['item_name']);
-            mysqli_query($conn, "UPDATE cart SET quantity = quantity - 1 WHERE id='$id'");
-            mysqli_query($conn, "UPDATE breeds SET quantity = quantity + 1 WHERE breed='$itemName'");
-        }
-    }
-}
 ?>
 <!DOCTYPE html>
 <html>
@@ -66,55 +25,102 @@ if (isset($_GET['decrease'])) {
         </div>
     </header>
 
-    <div class="cart-container">
+    <div class="cart-container" id="cart-container-wrapper">
         <?php
         $total = 0;
-        $query = mysqli_query($conn, "SELECT * FROM cart WHERE username='$username'");
+        $query = mysqli_query($conn, "SELECT cart.*, breeds.image FROM cart LEFT JOIN breeds ON cart.item_name = breeds.breed WHERE cart.username='$username'");
 
-        $imageMap = [
-            "Bengal" => "images/bengal.jpg",
-            "British Shorthair" => "images/british-shorthair.jpg",
-            "Maine Coon" => "images/maine-coon.jpg",
-            "Persian" => "images/persian.jpg",
-            "Ragdoll" => "images/ragdoll.jpg",
-            "Scottish Fold" => "images/scottish-fold.jpg",
-            "Sphynx" => "images/sphynx.jpg"
-        ];
-
-        while ($row = mysqli_fetch_assoc($query)) {
-            $subtotal = $row['price'] * $row['quantity'];
-            $total += $subtotal;
-            $image = $imageMap[$row['item_name']] ?? "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=800&q=80";
-        ?>
-        <div class="cart-card">
-            <img src="<?php echo $image; ?>" alt="<?php echo $row['item_name']; ?>">
-            <h3><?php echo $row['item_name']; ?></h3>
-            <p class="price">Rs. <?php echo $row['price']; ?></p>
-            <p>Quantity: <b><?php echo $row['quantity']; ?></b></p>
-            <p>Subtotal: <b>Rs. <?php echo $subtotal; ?></b></p>
-            <div class="cart-buttons">
-                <a href="cart.php?increase=<?php echo $row['id']; ?>">
-                    <button class="small-btn plus-btn">+</button>
-                </a>
-                <a href="cart.php?decrease=<?php echo $row['id']; ?>">
-                    <button class="small-btn minus-btn">-</button>
-                </a>
-                <a href="cart.php?remove=<?php echo $row['id']; ?>">
-                    <button class="small-btn remove-btn">Remove</button>
-                </a>
+        if (mysqli_num_rows($query) === 0) {
+            echo "<p class='empty-cart-msg' style='text-align:center; width:100%; margin: 50px 0;'>Your cart is empty.</p>";
+        } else {
+            while ($row = mysqli_fetch_assoc($query)) {
+                $subtotal = $row['price'] * $row['quantity'];
+                $total += $subtotal;
+                $image = !empty($row['image']) ? $row['image'] : "images/placeholder.jpg";
+            ?>
+            <div class="cart-card" id="cart-card-<?php echo $row['id']; ?>">
+                <img src="<?php echo htmlspecialchars($image); ?>" alt="<?php echo htmlspecialchars($row['item_name']); ?>">
+                <h3><?php echo htmlspecialchars($row['item_name']); ?></h3>
+                <p class="price">Rs. <?php echo $row['price']; ?></p>
+                <p>Quantity: <b id="qty-<?php echo $row['id']; ?>"><?php echo $row['quantity']; ?></b></p>
+                <p>Subtotal: <b id="subtotal-<?php echo $row['id']; ?>">Rs. <?php echo $subtotal; ?></b></p>
+                <div class="cart-buttons">
+                    <button class="small-btn plus-btn" onclick="updateCartItem(<?php echo $row['id']; ?>, 'increase')">+</button>
+                    <button class="small-btn minus-btn" onclick="updateCartItem(<?php echo $row['id']; ?>, 'decrease')">-</button>
+                    <button class="small-btn remove-btn" onclick="updateCartItem(<?php echo $row['id']; ?>, 'remove')">Remove</button>
+                </div>
             </div>
-        </div>
-        <?php } ?>
+            <?php 
+            }
+        } 
+        ?>
     </div>
 
-    <div class="bill-box">
-        <h2>Total: Rs. <?php echo $total; ?></h2>
+    <div class="bill-box" id="bill-summary-box" style="<?php echo ($total == 0) ? 'display:none;' : ''; ?>">
+        <h2 id="grand-total-text">Total: Rs. <?php echo $total; ?></h2>
         <a href="checkout.php">
             <button class="checkout-btn">Proceed To Checkout</button>
         </a>
     </div>
+
+    <footer id="contact">
+        <p>&copy; 2026 CatKart 🐾 | Contact: support@catkart.example</p>
+    </footer>
+
+    <script>
+    function updateCartItem(id, action) {
+        fetch('update_cart.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'id=' + id + '&action=' + action
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                if (data.action === 'remove') {
+                    let card = document.getElementById('cart-card-' + id);
+                    if (card) card.remove();
+                } else {
+                    let qtyEl = document.getElementById('qty-' + id);
+                    let subtotalEl = document.getElementById('subtotal-' + id);
+                    if (qtyEl) qtyEl.innerText = data.quantity;
+                    if (subtotalEl) subtotalEl.innerText = 'Rs. ' + data.subtotal;
+                }
+
+                // Update grand total
+                let grandTotalText = document.getElementById('grand-total-text');
+                if (grandTotalText) {
+                    grandTotalText.innerText = 'Total: Rs. ' + data.grand_total;
+                }
+
+                // If grand total is 0, show empty cart message and hide bill box
+                if (data.grand_total === 0) {
+                    let wrapper = document.getElementById('cart-container-wrapper');
+                    if (wrapper) {
+                        wrapper.innerHTML = "<p class='empty-cart-msg' style='text-align:center; width:100%; margin: 50px 0;'>Your cart is empty.</p>";
+                    }
+                    let billBox = document.getElementById('bill-summary-box');
+                    if (billBox) {
+                        billBox.style.display = 'none';
+                    }
+                }
+            } else if (data.status === 'error') {
+                if (data.message === 'out_of_stock') {
+                    alert('Sorry, this item is out of stock.');
+                } else if (data.message === 'login_required') {
+                    alert('Please login first.');
+                    window.location.href = 'login.php';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error updating cart:', error);
+        });
+    }
+    </script>
 </body>
-<footer id="contact">
-    <p>&copy; 2026 CatKart 🐾 | Contact: support@catkart.example</p>
-</footer>
 </html>

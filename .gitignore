@@ -1,0 +1,13 @@
+# PHP session files
+.php-sessions/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# DB credentials override (if user creates local copy)
+db.local.php

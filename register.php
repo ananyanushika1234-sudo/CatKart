@@ -8,10 +8,10 @@ if (isset($_POST['register'])) {
     $address  = $_POST['address'];
     $pincode  = $_POST['pincode'];
     $username = $_POST['username'];
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $confirm  = $_POST['confirm'];
 
-    if ($password != $confirm) {
+    if ($_POST['password'] != $confirm) {
         $error = "Passwords do not match";
     } else {
         $query = "INSERT INTO users 

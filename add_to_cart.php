@@ -36,13 +36,6 @@ if (isset($_POST['item'])) {
         $currentQty = (int)mysqli_fetch_assoc($cartQuery)['quantity'];
     }
 
-    // The breed quantity already tracks remaining stock, so only the current
-    // available count matters for adding one more item.
-    if ($available <= 0) {
-        echo "out_of_stock";
-        exit();
-    }
-
     if ($currentQty > 0) {
         mysqli_query($conn,
             "UPDATE cart SET quantity = quantity + 1 WHERE username='$username' AND item_name='$item'");
